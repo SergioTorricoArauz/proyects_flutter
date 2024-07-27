@@ -71,14 +71,36 @@ class StudentListPageState extends State<StudentListPage> {
                             Text(
                                 'Registration End Date: ${student.registrationEndDate.toLocal()}'),
                             if (student.imagePath.isNotEmpty)
-                              Image.network(
-                                student.imagePath,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Text('Error loading image');
-                                },
-                              )
-                            else
-                              const Text('No image available'),
+                              if (student.imagePath.isNotEmpty)
+                                Image.network(
+                                  'http://localhost:8080/file/files/${student.imagePath}',
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Text('Error loading image');
+                                  },
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    // Imprimir la URL de la imagen en la consola
+                                    print(
+                                        'Obteniendo imagen de: ${student.imagePath}');
+
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                (loadingProgress
+                                                        .expectedTotalBytes ??
+                                                    1)
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                )
+                              else
+                                const Text('No image available'),
                           ],
                         ),
                       ),
