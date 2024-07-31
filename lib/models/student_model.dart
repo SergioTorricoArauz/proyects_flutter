@@ -1,5 +1,5 @@
 class Student {
-  int id;
+  int? id;
   String studentName;
   String lastName;
   DateTime birthDate;
@@ -8,7 +8,7 @@ class Student {
   String imagePath;
 
   Student({
-    required this.id,
+    this.id,
     required this.studentName,
     required this.lastName,
     required this.birthDate,
