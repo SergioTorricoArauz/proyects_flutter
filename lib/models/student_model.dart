@@ -5,7 +5,7 @@ class Student {
   DateTime birthDate;
   DateTime registrationDate;
   DateTime registrationEndDate;
-  String imagePath;
+  String? imagePath;
 
   Student({
     this.id,
@@ -14,7 +14,7 @@ class Student {
     required this.birthDate,
     required this.registrationDate,
     required this.registrationEndDate,
-    required this.imagePath,
+    this.imagePath,
   });
 
   factory Student.fromJson(Map<String, dynamic> json) {

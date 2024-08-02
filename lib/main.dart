@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:register/screens/students/create_student_page.dart';
 import 'package:register/screens/students/list_page.dart';
 
 void main() {
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       routes: {
         '/students': (context) => const StudentListPage(),
+        '/form': (context) => const CreateStudentPage(),
       },
     );
   }
@@ -33,11 +35,24 @@ class HomePage extends StatelessWidget {
         title: const Text('Página Principal'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/students');
-          },
-          child: const Text('Ver Lista de Estudiantes'),
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/students');
+              },
+              child: const Text('Ver Lista de Estudiantes'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/form');
+                },
+                child: const Text('Formulario de estudiantes'),
+              ),
+            )
+          ],
         ),
       ),
     );

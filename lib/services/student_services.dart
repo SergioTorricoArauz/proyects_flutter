@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:logging/logging.dart';
-
 import '../models/student_model.dart';
 
 class StudentServices {
   final _logger = Logger('StudentServices');
+  final ImagePicker picker = ImagePicker();
   final client = http.Client();
 
   Future<List<Student>> getListStudents() async {
@@ -92,6 +93,75 @@ class StudentServices {
     } catch (e) {
       _logger.severe('Error updating student: $e');
       rethrow;
+    }
+  }
+
+  Future<void> deleteStudent(int id) async {
+    final url = 'http://localhost:8080/student/delete/$id';
+
+    try {
+      final response = await client.delete(Uri.parse(url));
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete student');
+      }
+    } catch (e) {
+      _logger.severe('Error deleting student: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> pickAndUploadImage(int studentId) async {
+    try {
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+
+      await uploadImage(image, studentId);
+    } catch (e) {
+      _logger.severe('Error al seleccionar o subir imagen: $e');
+    }
+  }
+
+  Future<void> uploadImage(XFile imageFile, int studentId) async {
+    final uri = Uri.parse(
+        'http://localhost:8080/student/students/upload?id=$studentId');
+
+    if (Uri.base.scheme == 'http' || Uri.base.scheme == 'https') {
+      // Flutter Web
+      final request = http.MultipartRequest('POST', uri)
+        ..fields['id'] = studentId.toString()
+        ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+      try {
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          _logger.info('Imagen subida exitosamente');
+        } else {
+          _logger.severe('Error al subir imagen: ${response.statusCode}');
+        }
+      } catch (e) {
+        _logger.severe('Error durante la subida de imagen: $e');
+      }
+    } else {
+      // Flutter Mobile
+      final request = http.MultipartRequest('POST', uri)
+        ..fields['id'] = studentId.toString()
+        ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+      try {
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          _logger.info('Imagen subida exitosamente');
+        } else {
+          _logger.severe('Error al subir imagen: ${response.statusCode}');
+        }
+      } catch (e) {
+        _logger.severe('Error durante la subida de imagen: $e');
+      } finally {
+        client.close();
+      }
     }
   }
 }

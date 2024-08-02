@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:register/models/student_model.dart';
-import 'package:register/screens/students/form_page.dart';
+import 'package:register/screens/students/update_student_page.dart';
+import 'package:register/screens/students/upload_image_page.dart';
 import 'package:register/services/student_services.dart';
 
 class StudentDetailPage extends StatefulWidget {
@@ -60,15 +61,26 @@ class StudentDetailPageState extends State<StudentDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: student.imagePath.isNotEmpty
-                          ? NetworkImage(
-                              'http://localhost:8080/file/files/${student.imagePath}')
-                          : null,
-                      child: student.imagePath.isEmpty
-                          ? const Icon(Icons.person, size: 50)
-                          : null,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (mounted) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const UploadImagePage(),
+                            ),
+                          );
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: student.imagePath != null
+                            ? NetworkImage(
+                                'http://localhost:8080/file/files/${student.imagePath}')
+                            : null,
+                        child: student.imagePath == null
+                            ? const Icon(Icons.person, size: 50)
+                            : null,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
